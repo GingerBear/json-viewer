@@ -1,0 +1,140 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-family: monospace;
+  box-sizing: border-box;
+}
+
+body {
+  padding: 10px;
+}
+
+ul {
+  list-style: none;
+}
+
+h2 {
+  font-size: 12px;
+  color: #333;
+}
+
+span {
+  font-size: 12px;
+  color: #333;
+}
+
+.object-key {
+  display: inline-block;
+  margin-right: 5px;
+  vertical-align: top;
+}
+
+.object-value.type-value {
+  display: inline-block;
+}
+
+.object-value.type-value .value {
+  display: inline-block;
+}
+
+.object-value.type-value:after {
+  content: ',';
+}
+
+.object-value.type-value.last:after {
+  content: '';
+}
+
+[class*="level"] {
+  margin-left: 20px;
+}
+
+.value {
+  margin-left: 0;
+}
+
+.value-type-number, .value-type-boolean {
+  color: brown;
+}
+
+.value-type-string {
+  color: green;
+}
+
+.value-type-string:before,
+.value-type-string:after {
+  content: '"';
+}
+
+.type-array:before {
+  content: '[';
+  display: inline-block;
+}
+
+.type-array:after {
+  content: ']';
+  display: inline-block;
+}
+
+.type-object:before {
+  content: '{';
+  display: inline-block;
+}
+
+.type-object:after {
+  content: '},';
+  display: inline-block;
+}
+
+.type-object.last:after {
+  content: '}';
+}
+
+#viewer {
+  margin-left: 150px;
+}
+
+#nav {
+  position: fixed;
+  left: 0;
+  top: 10px;
+  background: rgba(256, 256, 256, 0.8);
+  padding: 10px 5px;
+  padding-top: 0;
+  padding-bottom: 20px;
+  border-right: 1px solid #eee;
+  width: 150px;
+  overflow: hidden;
+}
+
+#nav a {
+  color: #333;
+  display: inline-block;
+  padding: 2px 5px;
+  text-decoration: none;
+}
+
+#nav a.active {
+  background: #eee;
+}
+
+#nav .level-0 {
+  padding-left: 0;
+  margin-left: 0;
+  margin-top: 10px;
+  display: block;
+}
+
+#nav .level-0:first-of-type {
+  margin-top: 0;
+}
+
+#nav .level-0 {
+  font-weight: bold;
+}
+
+#nav .level-1 {
+  padding-left: 10px;
+  margin-left: 0;
+  display: block;
+}
