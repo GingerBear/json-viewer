@@ -19,6 +19,8 @@ function init() {
   var formated = format('', json, 0);
   var viewer = document.createElement('div');
   var nav = document.createElement('div');
+  var formModal = document.createElement('div');
+
   text.style.display = 'none';
 
   viewer.setAttribute('id', 'viewer');
@@ -27,12 +29,17 @@ function init() {
   nav.setAttribute('id', 'nav');
   document.body.appendChild(nav);
 
+  formModal.setAttribute('id', 'form');
+  document.body.appendChild(formModal);
+
   viewer.innerHTML = formated.val;
   if (topHashLinks.length) {
     nav.innerHTML = topHashLinks.join('');
   }
 
   setTimeout(initScrollHover, 10);
+  initFormButton();
+
   function initScrollHover() {
     var navLinks = Array.prototype.slice.call(nav.querySelectorAll('a'));
     navLinks.forEach(function(l) {
@@ -122,6 +129,10 @@ function init() {
       last = (i === size - 1);
       child = format(key, json[key], level + 1);
 
+      if (parentKey === 'forms') {
+        key = makeFormButton(key, json[key]);
+      }
+
       formated += '<li class="object-item"><h2 class="object-key">' + key + ':</h2>';
       formated += '<div class="object-value type-' + child.type + ' ' + (last ? 'last' : '') + ' ' + (child.empty ? 'empty' : '') + '">' + child.val + '</div></li>';
       i++
@@ -141,6 +152,14 @@ function init() {
       type: 'object',
       val: formated
     }
+  }
+
+  function makeFormButton(key, values) {
+    var button = document.createElement('button');
+    button.classList.add('form-button');
+    button.dataset.form = btoa(JSON.stringify(values));
+    button.textContent = key;
+    return button.outerHTML;
   }
 
   function formatValue(parentKey, json, level) {
@@ -168,5 +187,77 @@ function init() {
 	  style.type = "text/css";
     style.href = chrome.extension.getURL("content.css");
     document.head.appendChild(style);
+  }
+
+  function newImgNode(src) {
+    var img = document.createElement('img');
+    img.src = src;
+    return img;
+  }
+
+  function initFormButton() {
+    document.body.onclick = function(e) {
+      if(e.target.classList.contains('form-button')) {
+        var button = e.target;
+        var dataForm = button.dataset.form;
+        var title = button.innerText;
+
+        try {
+          dataForm = JSON.parse(atob(dataForm));
+        } catch (e) {
+          return ;
+        }
+
+        var formHTML = makeForm(title, dataForm);
+        formModal.innerHTML = formHTML;
+      }
+
+      if(e.target.classList.contains('close-form')) {
+        e.preventDefault();
+        e.target.parentNode.remove();
+      }
+
+      if(e.target.classList.contains('form-submit')) {
+        e.preventDefault();
+        var form = document.querySelector('#form form');
+        var req = new XMLHttpRequest();
+        var data = '';
+
+        for (var i = 0; i < form.elements.length; i++) {
+          if (form.elements.item(i).name) {
+            data += encodeURIComponent(form.elements.item(i).name)
+              + '=' + encodeURIComponent(form.elements.item(i).value) + '&';
+          }
+        }
+
+        req.open(form.getAttribute('method'), form.action);
+        req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        req.onreadystatechange = function() {
+          if (req.readyState == 4) {
+            var div = document.createElement('div');
+            div.classList.add('form-result');
+            div.textContent = req.status + ': ' + req.responseText;
+            form.appendChild(div);
+          }
+        };
+        req.send(data);
+      }
+    }
+  }
+
+  function makeForm(title, data) {
+    var form = '<form method="' + data.method + '" action="' + data.action + '" target="_blank">';
+    form += '<a class="close-form" href="#">&times;</a>';
+    form += '<h2>' + title + '</h2>';
+    for (var key in data.inputs) {
+      form += '<div><label>' + key + '</label><input type="text" name="' + key + '" value="' + data.inputs[key] + '"></div>';
+    }
+    for (var key in data.prompt) {
+      form += '<div><label>' + key + '</label><input type="text" name="' + key + '" value=""></div>';
+    }
+
+    form += '<button class="form-submit" >Submit</button>';
+    form += '</form>';
+    return form;
   }
 }

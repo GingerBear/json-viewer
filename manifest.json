@@ -4,14 +4,11 @@
   "description": "Chrome extension that view json better.",
   "permissions" : ["clipboardWrite", "http://*/", "contextMenus", "https://*/", "ftp://*/"],
   "content_scripts": [{
-	  "matches": ["http://*/*", "https://*/*", "ftp://*/*", "file:///*"],
-	  "js": ["content.js"],
-	  "run_at" : "document_end",
-	  "all_frames" : true
+    "matches": ["http://*/*", "https://*/*", "ftp://*/*", "file:///*"],
+    "js": ["content.js"],
+    "run_at" : "document_end",
+    "all_frames" : true
   }],
-  "browser_action": {
-    "default_title": "view json better"
-  },
   "web_accessible_resources": [
     "content.css"
   ],
