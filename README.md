@@ -1,3 +1,6 @@
 # json-viewer
 
-chrome extenson that make json looks better.
+Chrome extenson that make json looks better.
+
+Chrome web store:
+https://chrome.google.com/webstore/detail/json-viewer/cbiilgehkppaalgiknkamjiknddlhggo
