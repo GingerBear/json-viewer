@@ -105,7 +105,8 @@ span {
   padding-bottom: 20px;
   border-right: 1px solid #eee;
   width: 150px;
-  overflow: hidden;
+  height: 100%;
+  overflow: scroll;
 }
 
 #nav a {
