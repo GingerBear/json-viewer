@@ -41,17 +41,52 @@ function init() {
   initFormButton();
 
   function initScrollHover() {
+    var lastPosition = null;
+    var topPin = [180, 0];
+    var bottomPin = [180, window.screen.height];
     var navLinks = Array.prototype.slice.call(nav.querySelectorAll('a'));
-    navLinks.forEach(function(l) {
-      l.onmouseenter = function(e) {
-        window.location.replace(e.target.hash);
+
+    nav.onmousemove = function(e) {
+      if (!lastPosition) {
+        lastPosition = {x: e.x, y: e.y};
+        goTo(e.target.hash)
+        return;
       }
-    });
+
+      if (checkShouldMove(e, lastPosition)) {
+        goTo(e.target.hash)
+      }
+
+      lastPosition = {x: e.x, y: e.y};
+    };
+
+    function goTo(hash) {
+      if(hash && window.location.hash !== hash) {
+        window.location.replace(hash);
+      }
+    }
+
+    function checkShouldMove(currentPos, lastPos) {
+      var shouldMove = false;
+
+      if (currentPos.x < lastPos.x) {
+        shouldMove = true;
+      }
+
+      if ((currentPos.y < lastPos.y && ((currentPos.y - topPin[1]) / (topPin[0] - currentPos.x)) > ((lastPos.y - topPin[1]) / (topPin[0] - lastPos.x)))
+        || (currentPos.y > lastPos.y && ((bottomPin[1] - currentPos.y) / (bottomPin[0] - currentPos.x)) > ((bottomPin[1] - lastPos.y) / (bottomPin[0] - lastPos.x)))) {
+          shouldMove = false;
+      } else {
+        shouldMove = true;
+      }
+
+      return shouldMove;
+    }
 
     var linkPositions = navLinks.map(function(l) {
       return {
         link: l,
-        targetY: document.querySelector(l.getAttribute('href')).offsetTop
+        targetY: document.querySelector(l.getAttribute('href')) ? document.querySelector(l.getAttribute('href')).offsetTop : 0
       }
     });
 
@@ -86,9 +121,10 @@ function init() {
     var formated = '<ul class="array level-' + level + '">';
     var last = false;
     for (var i = 0; i < json.length; i++) {
-      if (level <= 1) {
-        topHashLinks.push('<li class="level-' + level + '"><a class="" href="#' + parentKey +'-'+ i + '">Array #' + i + '</a></li>');
-        formated += '<span id="' + parentKey +'-'+ i + '"></span>';
+      if (level <= 2) {
+        var hrefId = 'arr-' + parentKey +'-'+ i + '-' + level;
+        topHashLinks.push('<li class="level-' + level + '"><a class="" href="#' + hrefId + '">Array[' + i + ']</a></li>');
+        formated += '<span id="' + hrefId + '"></span>';
       }
 
       child = format(i, json[i], level + 1);
@@ -121,9 +157,10 @@ function init() {
     var formated = '<ul class="object level-' + level + '">';
 
     for (var key in json) {
-      if (level <= 1) {
-        topHashLinks.push('<li class="level-' + level + '"><a class="" href="#' + parentKey +'-'+ key + '">' + key + '</a></li>');
-        formated += '<span id="' + parentKey +'-'+ key + '"></span>';
+      if (level <= 2) {
+        var hrefId = 'obj-' + parentKey +'-'+ key;
+        topHashLinks.push('<li class="level-' + level + '"><a class="" href="#' + hrefId + '">' + key + '</a></li>');
+        formated += '<span id="' + hrefId + '"></span>';
       }
 
       last = (i === size - 1);
