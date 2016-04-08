@@ -123,6 +123,13 @@ span {
   background: #eee;
 }
 
+#history span {
+  position: fixed;
+  width: 5px;
+  height: 5px;
+  background: red;
+}
+
 #nav .level-0 {
   padding-left: 0;
   margin-left: 0;
