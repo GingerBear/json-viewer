@@ -86,8 +86,8 @@ function init() {
     var formated = '<ul class="array level-' + level + '">';
     var last = false;
     for (var i = 0; i < json.length; i++) {
-      if (level <= 1) {
-        topHashLinks.push('<li class="level-' + level + '"><a class="" href="#' + parentKey +'-'+ i + '">Array #' + i + '</a></li>');
+      if (level <= 2) {
+        topHashLinks.push('<li class="level-' + level + '"><a class="" href="#' + parentKey +'-'+ i + '">Array[' + i + ']</a></li>');
         formated += '<span id="' + parentKey +'-'+ i + '"></span>';
       }
 
@@ -121,7 +121,7 @@ function init() {
     var formated = '<ul class="object level-' + level + '">';
 
     for (var key in json) {
-      if (level <= 1) {
+      if (level <= 2) {
         topHashLinks.push('<li class="level-' + level + '"><a class="" href="#' + parentKey +'-'+ key + '">' + key + '</a></li>');
         formated += '<span id="' + parentKey +'-'+ key + '"></span>';
       }
