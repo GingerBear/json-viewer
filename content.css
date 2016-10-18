@@ -18,12 +18,21 @@ h2 {
   color: #333;
 }
 
+.focus {
+  background: #eee;
+}
+
 span {
   font-size: 12px;
   color: #333;
 }
 
+.object-item {
+  padding: 1px;
+}
+
 .object-key {
+  font-weight: bold;
   display: inline-block;
   margin-right: 5px;
   vertical-align: top;
@@ -31,6 +40,35 @@ span {
 
 .object-value.type-value {
   display: inline-block;
+}
+
+.collapse-open,.collapse-close {
+  cursor: pointer;
+}
+
+.collapse-open + * > ul {
+  display: block;
+}
+
+.collapse-close + * > ul {
+  display: none;
+}
+
+.collapse-open:before, .collapse-close:before {
+  color: #333;
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 0 3px;
+  margin-right: 2px;
+  line-height: 12px;
+}
+
+.collapse-open:before {
+  content: '-';
+}
+
+.collapse-close:before {
+  content: '+';
 }
 
 .object-value.type-value .value {
@@ -59,11 +97,6 @@ span {
 
 .value-type-string {
   color: green;
-}
-
-.value-type-string:before,
-.value-type-string:after {
-  content: '"';
 }
 
 .type-array:before {

@@ -37,100 +37,82 @@ function init() {
     nav.innerHTML = topHashLinks.join('');
   }
 
-  setTimeout(initScrollHover, 10);
+  setTimeout(initNavClick, 10);
+  setTimeout(initCollapseClick, 10);
+  setTimeout(initHashChange, 10);
   initFormButton();
 
-  function initScrollHover() {
-    var lastPosition = null;
-    var topPin = [180, 0];
-    var bottomPin = [180, window.screen.height];
-    var navLinks = Array.prototype.slice.call(nav.querySelectorAll('a'));
-
-    nav.onmousemove = function(e) {
-      if (!lastPosition) {
-        lastPosition = {x: e.x, y: e.y};
-        goTo(e.target.hash)
-        return;
+  function initNavClick() {
+    nav.onclick = function(e) {
+      e.preventDefault();
+      if (e.target.hash) {
+        window.location.replace(e.target.hash);
       }
-
-      if (checkShouldMove(e, lastPosition)) {
-        goTo(e.target.hash)
-      }
-
-      lastPosition = {x: e.x, y: e.y};
     };
+  }
 
-    function goTo(hash) {
-      if(hash && window.location.hash !== hash) {
-        window.location.replace(hash);
-      }
-    }
-
-    function checkShouldMove(currentPos, lastPos) {
-      var shouldMove = false;
-
-      if (currentPos.x < lastPos.x) {
-        shouldMove = true;
-      }
-
-      if ((currentPos.y < lastPos.y && ((currentPos.y - topPin[1]) / (topPin[0] - currentPos.x)) > ((lastPos.y - topPin[1]) / (topPin[0] - lastPos.x)))
-        || (currentPos.y > lastPos.y && ((bottomPin[1] - currentPos.y) / (bottomPin[0] - currentPos.x)) > ((bottomPin[1] - lastPos.y) / (bottomPin[0] - lastPos.x)))) {
-          shouldMove = false;
-      } else {
-        shouldMove = true;
-      }
-
-      return shouldMove;
-    }
-
-    var linkPositions = navLinks.map(function(l) {
-      return {
-        link: l,
-        targetY: document.querySelector(l.getAttribute('href')) ? document.querySelector(l.getAttribute('href')).offsetTop : 0
+  function initCollapseClick() {
+    document.body.addEventListener('click', function(e) {
+      var target = e.target;
+      if(target.classList.contains('collapse-open')) {
+        target.classList.remove('collapse-open');
+        target.classList.add('collapse-close');
+      } else if (target.classList.contains('collapse-close')) {
+        target.classList.remove('collapse-close');
+        target.classList.add('collapse-open');
       }
     });
+  }
 
-    window.onscroll = function() {
-      window.requestAnimationFrame(function() {
-        var active = null;
-        for (var i = 0; i < linkPositions.length; i++) {
-          if (linkPositions[i].targetY - 10 > window.scrollY) {
-            linkPositions[i].link.classList.remove('active');
-          } else {
-            linkPositions[i].link.classList.remove('active');
-            active = linkPositions[i];
-          }
+  function initHashChange() {
+    window.onhashchange = handleHashChange;
+    handleHashChange();
+
+    function handleHashChange() {
+      var hash = window.location.hash;
+      if (!hash) return;
+      var focus = document.querySelector('[id="' + hash.replace('#', '') + '"]');
+      if (focus) {
+        document.querySelectorAll('.focus').forEach(function(node) {
+          node.classList.remove('focus');
+        });
+        focus.parentNode.classList.add('focus');
+        if (document.body.scrollHeight - focus.parentNode.offsetTop > 200) {
+          window.scroll(0, window.scrollY - 150);
         }
-        active && active.link.classList.add('active');
-      });
+      }
     }
   }
 
-  function format(parentKey, json, level) {
+  function format(path, json, level) {
     if (json instanceof Array) {
-      return formatArray(parentKey, json, level);
+      return formatArray(path, json, level);
     } else if (json && typeof json === 'object') {
-      return formatObject(parentKey, json, level);
+      return formatObject(path, json, level);
     } else {
-      return formatValue(parentKey, json, level);
+      return formatValue(path, json, level);
     }
   }
 
-  function formatArray(parentKey, json, level) {
+  function formatArray(path, json, level) {
     var child = {};
     var formated = '<ul class="array level-' + level + '">';
     var last = false;
+    var marker = '';
     for (var i = 0; i < json.length; i++) {
       if (level <= 2) {
-        var hrefId = 'arr-' + parentKey +'-'+ i + '-' + level;
+        var hrefId = path +'-'+ i + '-' + level;
+        if (level === 0) {
+          hrefId = i + '-' + level;
+        }
         topHashLinks.push('<li class="level-' + level + '"><a class="" href="#' + hrefId + '">Array[' + i + ']</a></li>');
-        formated += '<span id="' + hrefId + '"></span>';
+        marker = '<span id="' + hrefId + '"></span>';
       }
 
-      child = format(i, json[i], level + 1);
+      child = format(level === 0 ? i : path + '-' + i, json[i], level + 1);
       last = (i === json.length - 1);
 
-      formated += '<li class="array-item type-' + child.type + ' ' + (last ? 'last' : '') + ' ' + (child.empty ? 'empty' : '') + '">' + child.val + '</li>';
+      formated += '<li class="array-item type-' + child.type + ' ' + (last ? 'last' : '') + ' ' + (child.empty ? 'empty' : '') + '">' + marker + child.val + '</li>';
     }
     formated += '</ul>';
 
@@ -149,29 +131,41 @@ function init() {
     }
   }
 
-  function formatObject(parentKey, json, level) {
+  function formatObject(path, json, level) {
     var child = {};
     var last = false;
     var i = 0;
     var size = objSize(json);
     var formated = '<ul class="object level-' + level + '">';
+    var marker = '';
 
     for (var key in json) {
       if (level <= 2) {
-        var hrefId = 'obj-' + parentKey +'-'+ key;
+        var hrefId = path +'-'+ key;
+        if (level === 0) {
+          hrefId = key;
+        }
         topHashLinks.push('<li class="level-' + level + '"><a class="" href="#' + hrefId + '">' + key + '</a></li>');
-        formated += '<span id="' + hrefId + '"></span>';
+        marker = '<span id="' + hrefId + '"></span>';
       }
 
       last = (i === size - 1);
-      child = format(key, json[key], level + 1);
+      child = format(level === 0 ? key : path + '-' + key, json[key], level + 1);
 
-      if (parentKey === 'forms') {
+      if (path === 'forms') {
         key = makeFormButton(key, json[key]);
       }
 
-      formated += '<li class="object-item"><h2 class="object-key">' + key + ':</h2>';
-      formated += '<div class="object-value type-' + child.type + ' ' + (last ? 'last' : '') + ' ' + (child.empty ? 'empty' : '') + '">' + child.val + '</div></li>';
+
+      formated += '<li class="object-item">';
+      formated += marker;
+
+      if (child.type !== 'value' && !child.empty) {
+        formated += '<span class="object-key collapse-open">' + key + ':</span>';
+      } else {
+        formated += '<span class="object-key">' + key + ':</span>';
+      }
+      formated += '<span class="object-value type-' + child.type + ' ' + (last ? 'last' : '') + ' ' + (child.empty ? 'empty' : '') + '">' + child.val + '</span></li>';
       i++
     }
     formated += '</ul>';
@@ -199,13 +193,14 @@ function init() {
     return button.outerHTML;
   }
 
-  function formatValue(parentKey, json, level) {
+  function formatValue(path, json, level) {
     if (typeof json === 'string' && (json.indexOf('http') === 0 || json.indexOf('/') === 0)) {
       json = '<a href="' + json + '">' + json + '</a>';
     }
+    var value = typeof json === 'string' ? '"' + json + '"' : json ;
     return {
       type: 'value',
-      val: '<div class="value level-' + level + '""><span class="value value-type-' + typeof json + '">' + json + '</span></div>'
+      val: '<span class="value level-' + level + '"><span class="value value-type-' + typeof json + '">' + value + '</span></span>'
     }
   }
 
@@ -233,7 +228,7 @@ function init() {
   }
 
   function initFormButton() {
-    document.body.onclick = function(e) {
+    document.body.addEventListener('click', function(e) {
       if(e.target.classList.contains('form-button')) {
         var button = e.target;
         var dataForm = button.dataset.form;
@@ -279,7 +274,7 @@ function init() {
         };
         req.send(data);
       }
-    }
+    });
   }
 
   function makeForm(title, data) {
