@@ -105,7 +105,7 @@ function init() {
         if (level === 0) {
           hrefId = i + '-' + level;
         }
-        topHashLinks.push('<li class="level-' + level + '"><a class="" href="#' + hrefId + '">Array[' + i + ']</a></li>');
+        topHashLinks.push('<li class="level-' + level + '"><a class="" href="#' + hrefId + '">' + path + '[' + i + ']</a></li>');
         marker = '<span id="' + hrefId + '"></span>';
       }
 
