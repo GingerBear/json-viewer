@@ -55,12 +55,13 @@ span {
 }
 
 .collapse-open:before, .collapse-close:before {
-  color: #333;
-  border: 1px solid #ccc;
+  color: #ccc;
+  border: 1px solid #eee;
   display: inline-block;
-  padding: 0 3px;
+  padding: 0 1px;
   margin-right: 2px;
-  line-height: 12px;
+  line-height: 10px;
+  margin-left: -14px;
 }
 
 .collapse-open:before {
