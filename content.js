@@ -2,11 +2,16 @@ init();
 
 function init() {
   var text = document.querySelector('pre');
-  if (!(document.body.childNodes.length === 1 && document.body.childNodes[0] === text)) {
-    return;
-  }
+  var bodyChildren = document.body.childNodes;
+  var isContinue = bodyChildren.length === 1 && (text ? bodyChildren[0] === text : true);
+  if (!isContinue) return;
 
   var json;
+
+  if(!text && typeof bodyChildren[0] === 'object') {
+    text = document.body;
+  }
+
   try {
     json = JSON.parse(text.innerHTML);
   } catch(e) {
@@ -21,7 +26,11 @@ function init() {
   var nav = document.createElement('div');
   var formModal = document.createElement('div');
 
-  text.style.display = 'none';
+  if(text.nodeName !== 'BODY') {
+    text.style.display = 'none';
+  } else {
+    text.innerHTML = '';
+  }
 
   viewer.setAttribute('id', 'viewer');
   document.body.appendChild(viewer);
