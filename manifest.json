@@ -1,6 +1,6 @@
 {
   "name": "json-viewer",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "author": "Neil Ding",
   "description": "Chrome extension that view json better.",
   "permissions" : ["clipboardWrite", "http://*/", "contextMenus", "https://*/", "ftp://*/"],
