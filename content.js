@@ -121,7 +121,14 @@ function init() {
       child = format(level === 0 ? i : path + '-' + i, json[i], level + 1);
       last = (i === json.length - 1);
 
-      formated += '<li class="array-item type-' + child.type + ' ' + (last ? 'last' : '') + ' ' + (child.empty ? 'empty' : '') + '">' + marker + child.val + '</li>';
+      formated += '<li class="array-item type-' + child.type + ' ' + ' ' + (child.empty ? 'empty' : '') + '">' +
+        getSpace(level + 1) +
+        '<span class="bracket">' + (child.type === 'array' ? '[' : (child.type === 'object' ? '{': '')) + '</span>' +
+        marker + child.val +
+        getSpace(level + 1) +
+        '<span class="bracket">' + (child.type === 'array' ? ']' : (child.type === 'object' ? '}': '')) + '</span>' +
+        (last ? '' : '<span class="comma">,</span>') +
+      '</li>';
     }
     formated += '</ul>';
 
@@ -130,7 +137,11 @@ function init() {
     }
 
     if (level === 0) {
-      formated = '<div class="object-value type-array last">' + formated + '</div>';
+      formated = '<div class="object-value type-array last">' +
+      '<span class="bracket">[</span>' +
+      formated +
+      '<span class="bracket">]</span>' +
+      '</div>';
     }
 
     return {
@@ -158,6 +169,7 @@ function init() {
         marker = '<span id="' + hrefId + '"></span>';
       }
 
+      fist = (i === 0);
       last = (i === size - 1);
       child = format(level === 0 ? key : path + '-' + key, json[key], level + 1);
 
@@ -170,11 +182,16 @@ function init() {
       formated += marker;
 
       if (child.type !== 'value' && !child.empty) {
-        formated += '<span class="object-key collapse-open">' + key + ':</span>';
+        formated += getSpace(level + 1) + '<span class="object-key collapse-open">' + key + ':&nbsp;</span>';
       } else {
-        formated += '<span class="object-key">' + key + ':</span>';
+        formated += getSpace(level + 1) + '<span class="object-key">' + key + ':&nbsp;</span>';
       }
-      formated += '<span class="object-value type-' + child.type + ' ' + (last ? 'last' : '') + ' ' + (child.empty ? 'empty' : '') + '">' + child.val + '</span></li>';
+      formated += '<span class="object-value type-' + child.type + ' ' + (last ? 'last' : '') + ' ' + (child.empty ? 'empty' : '') + '">' +
+        '<span class="bracket">' + (child.type === 'array' ? '[' : (child.type === 'object' ? '{': '')) + '</span>' +
+        child.val +
+        '<span class="bracket">' +(child.type === 'array' ? getSpace(level + 1) + ']' : (child.type === 'object' ? getSpace(level + 1) + '}': '')) + '</span>' +
+        (last ? '' : '<span class="comma">,</span>') +
+        '</span></li>';
       i++
     }
     formated += '</ul>';
@@ -184,7 +201,11 @@ function init() {
     }
 
     if (level === 0) {
-      formated = '<div class="object-value type-object last">' + formated + '</div>';
+      formated = '<div class="object-value type-object last">' +
+      '<span class="bracket">{</span>' +
+      formated +
+      '<span class="bracket">}</span>' +
+      '</div>';
     }
 
     return {
@@ -300,5 +321,13 @@ function init() {
     form += '<button class="form-submit" >Submit</button>';
     form += '</form>';
     return form;
+  }
+
+  function getSpace(num) {
+    var a = '';
+    for (var i = 0; i < num; i++) {
+      a += '<span class="space">&nbsp;&nbsp;</span>'
+    }
+    return a;
   }
 }
