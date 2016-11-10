@@ -27,14 +27,9 @@ span {
   color: #333;
 }
 
-.object-item {
-  padding: 1px;
-}
-
 .object-key {
   font-weight: bold;
   display: inline-block;
-  margin-right: 5px;
   vertical-align: top;
 }
 
@@ -54,6 +49,10 @@ span {
   display: none;
 }
 
+.collapse-close + * .space{
+  display: none;
+}
+
 .collapse-open:before, .collapse-close:before {
   color: #ccc;
   border: 1px solid #eee;
@@ -61,7 +60,7 @@ span {
   padding: 0 1px;
   margin-right: 2px;
   line-height: 10px;
-  margin-left: -14px;
+  margin-left: -12px;
 }
 
 .collapse-open:before {
@@ -76,16 +75,9 @@ span {
   display: inline-block;
 }
 
-.object-value.type-value:after {
-  content: ',';
-}
-
-.object-value.type-value.last:after {
-  content: '';
-}
-
-[class*="level"] {
-  margin-left: 20px;
+.space {
+  width: 15px;
+  display: inline-block;
 }
 
 .value {
@@ -100,28 +92,8 @@ span {
   color: green;
 }
 
-.type-array:before {
-  content: '[';
+.bracket {
   display: inline-block;
-}
-
-.type-array:after {
-  content: ']';
-  display: inline-block;
-}
-
-.type-object:before {
-  content: '{';
-  display: inline-block;
-}
-
-.type-object:after {
-  content: '},';
-  display: inline-block;
-}
-
-.type-object.last:after {
-  content: '}';
 }
 
 #viewer {
