@@ -54,8 +54,8 @@ span {
 }
 
 .collapse-open:before, .collapse-close:before {
-  color: #ccc;
-  border: 1px solid #eee;
+  color: #bbb;
+  border: 1px solid #ddd;
   display: inline-block;
   padding: 0 1px;
   margin-right: 2px;
@@ -75,11 +75,6 @@ span {
   display: inline-block;
 }
 
-.space {
-  width: 15px;
-  display: inline-block;
-}
-
 .value {
   margin-left: 0;
 }
@@ -90,10 +85,6 @@ span {
 
 .value-type-string {
   color: green;
-}
-
-.bracket {
-  display: inline-block;
 }
 
 #viewer {
