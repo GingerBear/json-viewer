@@ -20,22 +20,28 @@ function init() {
         return;
     }
 
-    injectCSS();
+    loadCSS();
+    // injectCSS();
 
     var topHashLinks = [];
     var formated = format('', json, 0);
     var viewer = document.createElement('div');
     var nav = document.createElement('div');
     var formModal = document.createElement('div');
+    var diggerInput = document.createElement('input');
+
+    diggerInput.setAttribute('id', 'diggerInput');
+    diggerInput.setAttribute('type', 'text');
+    document.body.appendChild(diggerInput);
 
     viewer.setAttribute('id', 'viewer');
     document.body.appendChild(viewer);
 
-    nav.setAttribute('id', 'nav');
-    document.body.appendChild(nav);
-
     formModal.setAttribute('id', 'form');
     document.body.appendChild(formModal);
+
+    nav.setAttribute('id', 'nav');
+    document.body.appendChild(nav);
 
     viewer.innerHTML = formated.val;
 
@@ -46,6 +52,7 @@ function init() {
     setTimeout(initNavClick, 10);
     setTimeout(initCollapseClick, 10);
     setTimeout(initHashChange, 10);
+    setTimeout(initDigger, 10);
     initFormButton();
 
     function initNavClick() {
@@ -91,6 +98,27 @@ function init() {
                 focus.parentNode.classList.add('focus');
             }
         }
+    }
+
+    // todo;
+    function initDigger() {
+        diggerInput.addEventListener('keyup', function (e) {
+            var path = e.target.value;
+
+            if (!path) {
+                viewer.innerHTML = format('', json, 0).val;
+                return;
+            }
+
+            console.log(path)
+            var newJson = eval(`
+                try {
+                    json.${path}
+                } catch(e) {}
+            `);
+
+            viewer.innerHTML = format('', newJson, 0).val;
+        });
     }
 
     function format(path, json, level) {
@@ -316,6 +344,15 @@ function init() {
             a += '&nbsp;&nbsp;'
         }
         return '<span class="space">' + a + '</span>';
+    }
+
+
+    function loadCSS() {
+        var style = document.createElement('link');
+        style.rel = "stylesheet";
+        style.type = "text/css";
+        style.href = chrome.extension.getURL("content.css");
+        document.head.appendChild(style);
     }
 
     function injectCSS() {

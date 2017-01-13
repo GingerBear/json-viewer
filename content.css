@@ -225,3 +225,7 @@ button {
   max-height: 100px;
   overflow: scroll;
 }
+
+#diggerInput {
+  float: right;
+}
