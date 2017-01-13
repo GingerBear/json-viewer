@@ -49,7 +49,16 @@ span {
   display: none;
 }
 
-.collapse-close + * .space{
+.collapse-dots {
+  display: none;
+}
+
+.collapse-close + * .collapse-dots {
+  display: inline;
+  cursor: pointer;
+}
+
+.collapse-close + * .space {
   display: none;
 }
 

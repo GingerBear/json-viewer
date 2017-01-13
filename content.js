@@ -20,7 +20,6 @@ function init() {
         return;
     }
 
-    // loadCSS();
     injectCSS();
 
     var topHashLinks = [];
@@ -50,7 +49,7 @@ function init() {
     initFormButton();
 
     function initNavClick() {
-        nav.onclick = function(e) {
+        nav.onclick = function (e) {
             e.preventDefault();
             if (e.target.hash) {
                 window.location.replace(e.target.hash);
@@ -59,7 +58,7 @@ function init() {
     }
 
     function initCollapseClick() {
-        document.body.addEventListener('click', function(e) {
+        document.body.addEventListener('click', function (e) {
             var target = e.target;
             if (target.classList.contains('collapse-open')) {
                 target.classList.remove('collapse-open');
@@ -67,6 +66,12 @@ function init() {
             } else if (target.classList.contains('collapse-close')) {
                 target.classList.remove('collapse-close');
                 target.classList.add('collapse-open');
+            } else if (target.classList.contains('collapse-dots')) {
+                var closed = target.parentNode && target.parentNode.previousSibling;
+                if (closed && closed.classList.contains('collapse-close')) {
+                    closed.classList.remove('collapse-close');
+                    closed.classList.add('collapse-open');
+                }
             }
         });
     }
@@ -80,13 +85,10 @@ function init() {
             if (!hash) return;
             var focus = document.querySelector('[id="' + hash.replace('#', '') + '"]');
             if (focus) {
-                document.querySelectorAll('.focus').forEach(function(node) {
+                document.querySelectorAll('.focus').forEach(function (node) {
                     node.classList.remove('focus');
                 });
                 focus.parentNode.classList.add('focus');
-                if (document.body.scrollHeight - focus.parentNode.offsetTop > 200) {
-                    window.scroll(0, window.scrollY - 150);
-                }
             }
         }
     }
@@ -123,7 +125,7 @@ function init() {
                 getSpace(level + 1) +
                 (child.type === 'array' ? '[' : (child.type === 'object' ? '{' : '')) +
                 marker + child.val +
-                getSpace(level + 1) +
+                ((child.type === 'value') ? '' : getSpace(level + 1)) +
                 (child.type === 'array' ? ']' : (child.type === 'object' ? '}' : '')) +
                 (last ? '' : ',') +
                 '</li>';
@@ -186,8 +188,9 @@ function init() {
             }
             formated += '<span class="object-value type-' + child.type + ' ' + (last ? 'last' : '') + ' ' + (child.empty ? 'empty' : '') + '">' +
                 (child.type === 'array' ? '[' : (child.type === 'object' ? '{' : '')) +
+                '<span class="collapse-dots">...</span>' +
                 child.val +
-                (child.type === 'array' ? getSpace(level + 1) + ']' : (child.type === 'object' ? getSpace(level + 1) + '}' : '')) +
+                (child.type === 'array' ? (child.empty ? ']' : getSpace(level + 1) + ']') : (child.type === 'object' ? getSpace(level + 1) + '}' : '')) +
                 (last ? '' : ',') +
                 '</span></li>';
             i++
@@ -241,22 +244,8 @@ function init() {
         return size;
     }
 
-    function loadCSS() {
-        var style = document.createElement('link');
-        style.rel = "stylesheet";
-        style.type = "text/css";
-        style.href = chrome.extension.getURL("content.css");
-        document.head.appendChild(style);
-    }
-
-    function newImgNode(src) {
-        var img = document.createElement('img');
-        img.src = src;
-        return img;
-    }
-
     function initFormButton() {
-        document.body.addEventListener('click', function(e) {
+        document.body.addEventListener('click', function (e) {
             if (e.target.classList.contains('form-button')) {
                 var button = e.target;
                 var dataForm = button.dataset.form;
@@ -292,7 +281,7 @@ function init() {
 
                 req.open(form.getAttribute('method'), form.action);
                 req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                req.onreadystatechange = function() {
+                req.onreadystatechange = function () {
                     if (req.readyState == 4) {
                         var div = document.createElement('div');
                         div.classList.add('form-result');
@@ -330,7 +319,7 @@ function init() {
     }
 
     function injectCSS() {
-        var css = `h2,span{font-size:12px;color:#333}.object-key,.object-value.type-value{display:inline-block}#form form,#history span,#nav{position:fixed}#form form,#nav{overflow:scroll}*{margin:0;padding:0;font-family:monospace;box-sizing:border-box}body{padding:10px}ul{list-style:none}.focus{background:#eee}.object-key{font-weight:700;vertical-align:top}.collapse-close,.collapse-open{cursor:pointer}.collapse-open+*>ul{display:block}.collapse-close+* .space,.collapse-close+*>ul{display:none}.collapse-close:before,.collapse-open:before{color:#bbb;border:1px solid #ddd;display:inline-block;padding:0 1px;margin-right:2px;line-height:10px;margin-left:-12px}.collapse-open:before{content:'-'}.collapse-close:before{content:'+'}.object-value.type-value .value{display:inline-block}.value{margin-left:0}.value-type-boolean,.value-type-number{color:brown}.value-type-string{color:green}#viewer{margin-left:180px;min-width:800px}#nav .level-0,#nav .level-1,#nav .level-2{margin-left:0;display:block}#nav{left:0;top:10px;background:rgba(256,256,256,.8);padding:0 5px 20px;border-right:1px solid #eee;width:180px;height:100%}#nav a{color:#333;display:block;padding:2px 5px;text-decoration:none}#nav a:hover{background:#f5f5f5}#nav a.active{background:#eee}#history span{width:5px;height:5px;background:red}#nav .level-0{padding-left:0;margin-top:3px;font-weight:700}#nav .level-0:first-of-type{margin-top:0}#nav .level-1{padding-left:10px}#nav .level-2{padding-left:15px;font-size:10px}#nav .level-2 a{color:#999}#nav .level-2 a:before{content:'-';margin-right:3px;color:#999}button{padding:5px;border-radius:3px;background:#fff}#form form{top:200px;left:220px;width:500px;padding:15px;box-shadow:0 4px 15px 0 rgba(0,0,0,.5);background:#fff;max-height:800px}#form h2{margin-bottom:15px}#form label{margin-right:10px;min-width:120px;display:inline-block}#form input{margin-bottom:5px;padding:5px}#form .close-form{font-size:3rem;float:right;color:#ccc;text-decoration:none;line-height:35px;margin-right:-15px;margin-top:-8px;padding:0 10px}#form .form-result{padding:5px;margin-top:10px;background:#eee;max-height:100px;overflow:scroll}`;
+        var css = `h2,span{font-size:12px;color:#333}.object-key,.object-value.type-value{display:inline-block}#form form,#history span,#nav{position:fixed}#form form,#nav{overflow:scroll}*{margin:0;padding:0;font-family:monospace;box-sizing:border-box}body{padding:10px}ul{list-style:none}.focus{background:#eee}.object-key{font-weight:700;vertical-align:top}.collapse-close,.collapse-open{cursor:pointer}.collapse-open+*>ul{display:block}.collapse-close+*>ul,.collapse-dots{display:none}.collapse-close+* .collapse-dots{display:inline;cursor:pointer}.collapse-close+* .space{display:none}.collapse-close:before,.collapse-open:before{color:#bbb;border:1px solid #ddd;display:inline-block;padding:0 1px;margin-right:2px;line-height:10px;margin-left:-12px}.collapse-open:before{content:'-'}.collapse-close:before{content:'+'}.object-value.type-value .value{display:inline-block}.value{margin-left:0}.value-type-boolean,.value-type-number{color:brown}.value-type-string{color:green}#viewer{margin-left:180px;min-width:800px}#nav .level-0,#nav .level-1,#nav .level-2{margin-left:0;display:block}#nav{left:0;top:10px;background:rgba(256,256,256,.8);padding:0 5px 20px;border-right:1px solid #eee;width:180px;height:100%}#nav a{color:#333;display:block;padding:2px 5px;text-decoration:none}#nav a:hover{background:#f5f5f5}#nav a.active{background:#eee}#history span{width:5px;height:5px;background:red}#nav .level-0{padding-left:0;margin-top:3px;font-weight:700}#nav .level-0:first-of-type{margin-top:0}#nav .level-1{padding-left:10px}#nav .level-2{padding-left:15px;font-size:10px}#nav .level-2 a{color:#999}#nav .level-2 a:before{content:'-';margin-right:3px;color:#999}button{padding:5px;border-radius:3px;background:#fff}#form form{top:200px;left:220px;width:500px;padding:15px;box-shadow:0 4px 15px 0 rgba(0,0,0,.5);background:#fff;max-height:800px}#form h2{margin-bottom:15px}#form label{margin-right:10px;min-width:120px;display:inline-block}#form input{margin-bottom:5px;padding:5px}#form .close-form{font-size:3rem;float:right;color:#ccc;text-decoration:none;line-height:35px;margin-right:-15px;margin-top:-8px;padding:0 10px}#form .form-result{padding:5px;margin-top:10px;background:#eee;max-height:100px;overflow:scroll}`;
 
         var head = document.head || document.getElementsByTagName('head')[0];
         var style = document.createElement('style');
